@@ -1,0 +1,11 @@
+crossword_engine/
+├── data/
+│   └── words.csv           # Your MIT 10,000 word list
+├── src/
+│   ├── __init__.py
+│   ├── dictionary.py       # NEW: The Pattern-Bucket Index logic
+│   ├── models.py           # Variable and Crossword classes (from crossword.py)
+│   ├── solver.py           # CrosswordCreator logic (from generate.py)
+│   └── utils.py            # CSV loading and grid parsing
+├── main.py                 # Entry point (Engine initializer)
+└── tests/                  # Unit tests for performance
