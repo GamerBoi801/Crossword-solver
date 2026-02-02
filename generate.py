@@ -1,11 +1,12 @@
 import sys
 
 from crossword import *
+from tests.dictionary import FastDictionary
 
 
 class CrosswordCreator():
 
-    def __init__(self, crossword):
+    def __init__(self, crossword, fast_dict : FastDictionary):
         """
         Create new CSP crossword generate.
         """
@@ -99,6 +100,8 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
+        #removes words from domain that dont have the same len as the variable length
+        # ensures every domain value  satisfies the var's unary constraint
         for key, value in self.domains.items():
 
             #every value in a var's domain has same no. of letters as var's length
@@ -322,6 +325,8 @@ class CrosswordCreator():
 
 
 def main():
+    fast_dict = FastDictionary()
+
 
     # Check usage
     if len(sys.argv) not in [3, 4]:
