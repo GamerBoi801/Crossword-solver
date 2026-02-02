@@ -10,7 +10,7 @@ class CrosswordCreator():
         """
         Create new CSP crossword generate.
         """
-        self,fast_dict = fast_dict
+        self,fast_dict = fast
         self.crossword = crossword
         self.domains = {
             var: self.crossword.words.copy()
@@ -119,7 +119,8 @@ class CrosswordCreator():
 
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
-        """
+        """ts[var] = len(domain)
+
         revised = False
         list_of_overlaps = self.crossword.overlaps[x, y]
 
@@ -268,14 +269,14 @@ class CrosswordCreator():
         in its domain. If there is a tie, choose the variable with the highest
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
-        """Pre-made by Google
+        """
         empty_spots = dict()
         
         #iterating over the Var domains
         for var, domain in self.domains.items():
             if var not in assignment:
                 empty_spots[var] = len(domain)
-painting abraham
+
         #MRV and Degree heuristic
         minima = min([value for var, value in empty_spots.items()])
         small_domains = [var for var, size in empty_spots.items() if size == minima]
