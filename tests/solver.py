@@ -84,6 +84,9 @@ class Solver():
 
 
         else:
+            queue = arcs
+            while queue:
+                # 
 
 
     
