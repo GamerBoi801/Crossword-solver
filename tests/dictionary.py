@@ -32,7 +32,7 @@ class FastDictionary():
                 '''Basic idea of pattern_index is thi
                 Imagine looking for a 3 letter word with 'O' in the middle index
                 1. you go to look self,pattern_index[3]
-                2. at that index look up the key (1, 'O')
+                2. at that self.crossword.variable's index look up the key (1, 'O')
                 3. U get a set of words like ['DOG', "POT', 'LOT', 'GOD']
                 ]'''
 

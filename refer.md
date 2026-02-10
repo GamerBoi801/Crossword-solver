@@ -78,5 +78,3 @@ This is where the CSP logic lives. This is the file you are writing now.
 2. **Solver Start:** `CrosswordSolver` asks the dictionary for all words matching each variable's length to create the initial `domains`.
 3. **Consistency:** `ac3` calls `revise` repeatedly to shrink those domains based on intersections.
 4. **Search:** `backtrack` picks a word, runs `ac3` again to see the "ripple effect," and either moves forward or undoes the choice.
-
-**Would you like me to walk through the logic for the `ac3` method next, now that you have these definitions written down?**

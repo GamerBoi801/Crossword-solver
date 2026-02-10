@@ -119,29 +119,39 @@ class CrosswordCreator():
 
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
-        """ts[var] = len(domain)
+        """
 
         revised = False
-        list_of_overlaps = self.crossword.overlaps[x, y]
+
+        list_of_overlaps = self.crossword.overlaps.get((x, y))
+
 
         if list_of_overlaps is  None:
             return False # no overlap so no revision
         
         x_cord, y_cord  = list_of_overlaps
-        to_remove = set()
        
-        #looping over x.domains
-        for x_val in self.domains[x]:
-            #for each xval check fi there exists any yval in y's domain that's consistent
-            if not any(x_val[x_cord] == y_val[y_cord] for y_val in self.domains[y]):
-                to_remove.add(x_val)
+        #audit variable X's domain
+        for x_word in list(self.domains[x]):
 
-        if to_remove:
-            self.domains[x] -= to_remove
-            revised = True
-
-        return revised
+            #identify character x_word puts at the meeting point
+            char_to_check = x_word[x_cord]
             
+            #we ask any words of y's length that have the char_to_check at that y_cord
+            # we use a mini req dict created by this {position: character}
+            possible_matches_for_y = self.fast_dict.get_matches(
+                y.length,
+                {y_cord: char_to_check}
+            )
+
+            # the pruning
+            # if the engine returns an empty set, it means no word for Y can ever satisfy the constraint created by this specific x_word
+            if not possible_matches_for_y:
+                self.domains[x].remove(x_word)
+                revised = True
+
+            return revised
+
 
 
     def ac3(self, arcs=None):
@@ -304,6 +314,7 @@ class CrosswordCreator():
 
         `assignment` is a mapping from variables (keys) to words (values).
 
+**Would you like me to walk through the logic for the `ac3` method next, now that you have these definitions written down?**
         If no assignment is possible, return None.
         """
         #Checks if assignment is complete or not

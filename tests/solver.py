@@ -70,5 +70,20 @@ class Solver():
 
         return revised
 
+    def ac3(self, arcs=None):
+        '''
+        Docstring for ac3
+        
+        :param arcs: 
+        '''
+        if arcs is None:
+            queue = []
+            for var in list(self.crossword.variables):
+                neighbor = self.crossword.neighbors(var)
+                queue.append((var, neighbor))
+
+
+        else:
+
 
     
