@@ -72,21 +72,48 @@ class Solver():
 
     def ac3(self, arcs=None):
         '''
-        Docstring for ac3
-        
-        :param arcs: 
+        Updates self.domain in such that each var is arc consistent
         '''
         if arcs is None:
             queue = []
-            for var in list(self.crossword.variables):
-                neighbor = self.crossword.neighbors(var)
-                queue.append((var, neighbor))
+            
+            #we need to add every pair of variables that overlap
+            for v1 in self.crossword.variables:
+                for v2 in self.crossword.neighbors(v1):
+                    queue.append(v1, v2)
 
 
         else:
-            queue = arcs
-            while queue:
-                # 
+            queue = list(arcs)
+
+
+        while queue:
+            # taking the first arc (X, y) from the queue
+            x, y = queue.pop(0)
+
+            if self.revise(x, y): #calling fast dictionary under the hood
+                # if x has no words left then return false
+                 if len(self.domains[x]) == 0:
+                     return False
+                 
+                 #since x's domain has changed, any neighbor z might be inconsistent with the 
+                #  new similar domain of X
+                 for z in self.crossword.neighbors(x):
+                    if z != y:
+                        queue.append((z, x))
+        return True
+    
+        
+
+
+
+        
+
+
+             
+             
+        
+                
 
 
     
