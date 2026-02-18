@@ -80,7 +80,7 @@ class Solver():
             #we need to add every pair of variables that overlap
             for v1 in self.crossword.variables:
                 for v2 in self.crossword.neighbors(v1):
-                    queue.append(v1, v2)
+                    queue.append((v1, v2))
 
 
         else:
@@ -103,17 +103,17 @@ class Solver():
                         queue.append((z, x))
         return True
     
+    def solve(self):
+        '''Initializes the solving process'''
+        self.ac3() #ini consistency check
+        return self.backtrack(dict())
         
-
-
-
-        
-
-
-             
-             
-        
-                
-
-
+    def assignment_complete(self, assignment):
+        '''checks if all the variables have been assigned to a word'''
+        return len(assignment) == len(self.crossword.variables)
     
+    def select_unassigned_variable(self, assignment):
+        '''MRV Heuristic (picks the variable with least remaining values in the domain)'''
+        unassigned = [v for v in self.crossword.variables if v not in assignment]
+        # sort by domain MRV
+        return min(unassigned, key=lambda )

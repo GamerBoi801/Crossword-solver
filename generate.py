@@ -314,7 +314,7 @@ class CrosswordCreator():
 
         `assignment` is a mapping from variables (keys) to words (values).
 
-**Would you like me to walk through the logic for the `ac3` method next, now that you have these definitions written down?**
+
         If no assignment is possible, return None.
         """
         #Checks if assignment is complete or not
