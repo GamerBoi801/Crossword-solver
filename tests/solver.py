@@ -1,6 +1,7 @@
 import sys
 from dictionary import FastDictionary
 from models import Crossword, Variable
+import copy
 class Solver():
     
     def __init__(self, crossword: Crossword , fast_dictionary : FastDictionary):
@@ -115,5 +116,82 @@ class Solver():
     def select_unassigned_variable(self, assignment):
         '''MRV Heuristic (picks the variable with least remaining values in the domain)'''
         unassigned = [v for v in self.crossword.variables if v not in assignment]
-        # sort by domain MRV
-        return min(unassigned, key=lambda )
+        # sort by domain size (MRV) min remaining value
+        return min(unassigned, key=lambda var: len(self.domains[var]))
+    
+    def consistent(self, word, var, assignment):
+        '''checks if assigning 'word' to var conflicts with the current assignment''' 
+        #checking the uniqueness of the word:
+        if word in assignment.values():
+            return False
+        
+        #checking intersections with alr assigned neighbors 
+        for neighbor in self.crossword.neighbors(var):
+            if neighbor in assignment:
+                x_index, y_index = self.crossword.overlaps[var, neighbor]
+                if word[x_index] != assignment[neighbor][y_index]:
+                    return False #checks to sif __name__ == '__main__':
+    fast_dict = FastDictionary()
+    
+    # Check usage
+    if len(sys.argv) not in [3, 4]:
+        sys.exit("Usage: python generate.py structure words [output]")
+
+    
+    # Parse command-line arguments
+    structure = sys.argv[1]
+    words = sys.argv[2]
+    output = sys.argv[3] if len(sys.argv) == 4 else None
+
+    # Generate crossword
+    crossword = Crossword(structure, words)
+    creator = CrosswordCreator(crossword)
+    assignment = creator.solve()
+
+    # Print result
+    if assignment is None:
+        print("No solution.")
+    else:
+        creator.print(assignment)
+        if output:
+            creator.save(assignment, output)ee if the char onhttps://drive.google.com/drive/folders/1PJJD6CHgCQTjNGvFiy72xHUt2Z_Epq77 the intersection r the same or not
+                
+
+        return True
+    
+    def backtrack(self, assignment):
+        '''main recursive search function'''
+        #base case
+        if self.assignment_complete(assignment):
+            return assignment
+        
+        # selecting the next variable using MRV (min remaining value)
+        var = self.select_unassigned_variable(assignment)
+
+        #trying each word in the domain
+        for value in list(self.domains[var]):
+            if self.consistent(value, var, assignment):
+
+                domain_record = copy.deepcopy(self.domains)
+
+                #assign the word
+                assignment[var] = value
+                self.domains[var] = {value} # this var must be this word
+
+                # maintaining arc consistency
+                #seeing if this choice makes future slots impossible
+                if self.ac3([(n, var) for n in self.crossword.neighbors(var)]):
+                    result = self.backtrack(assignment)
+                    if result is not None:
+                        return result
+                    
+                
+                #backtrack
+                del assignment[var]
+                self.domains = domain_record
+
+        return None
+
+
+
+
