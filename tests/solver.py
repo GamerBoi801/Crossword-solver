@@ -8,6 +8,10 @@ class Solver():
        '''
        Initialise the CSP solver with a crossword structure and the 
        dictionary engine
+
+       creates the domain for every possible word for every slot on the on the board
+       if lets say a Var is  len 3 then __init__ asks FastDictionary to return all the possible 
+       3 letter words and adds them to the domain of that variable  
        '''
 
     # ini the domains using the dict engine
@@ -36,6 +40,17 @@ class Solver():
         value for Y in self.domains[y] 
         returns True if a revision is made to the domain of X, 
         returns False if no revision is made
+
+        checks for a single overlap between 2 words (X n Y), and checks to see is there any word in slot X that makes slot Y impossible
+        if X and Y share a letter X, only keeps those words that have a potential partner in Y
+
+        for exp 
+        - Slot X (Across) and Slot Y(Down) and overlap at the first letter
+        - X's domain is {'dog', 'cat'} and slot Y's domain has only words that start with 'C like 'cup' 
+        
+        - revise looks at 'dog, it see's Y has no words starting with 'D' so it removes that words from variable Y's domain
+
+        
         '''
 
         revised = False
@@ -74,6 +89,13 @@ class Solver():
     def ac3(self, arcs=None):
         '''
         Updates self.domain in such that each var is arc consistent
+
+        if u del a word from one slot it might affect the other neighbors and this keeps the whole board consistent 
+
+        for exp:
+        - if u prune X's domain because Y's domain
+        - so since X's domain is changed it checks to see if Var Z's domain (which overlaps var x on the crossword)
+
         '''
         if arcs is None:
             queue = []
@@ -114,13 +136,22 @@ class Solver():
         return len(assignment) == len(self.crossword.variables)
     
     def select_unassigned_variable(self, assignment):
-        '''MRV Heuristic (picks the variable with least remaining values in the domain)'''
+        '''decides which empty slot to try to fill next. Uses MRV(Min remaining values) heuristic
+        and it does this to remove identify and remove conflicts much more easily
+        '''
         unassigned = [v for v in self.crossword.variables if v not in assignment]
         # sort by domain size (MRV) min remaining value
         return min(unassigned, key=lambda var: len(self.domains[var]))
     
+    
     def consistent(self, word, var, assignment):
-        '''checks if assigning 'word' to var conflicts with the current assignment''' 
+        '''checks if assigning 'word' to var conflicts with the current assignment
+        
+        - prevents u from using the same word twice in the puzzle and double checks their overlaps
+        
+        - for exp if u try to put 'dog' in slot 1, but slot 2 alr has 'cat' and they overlap at 'C' consistent will say False 
+        because 'D' does not equal to 'C'
+        ''' 
         #checking the uniqueness of the word:
         if word in assignment.values():
             return False
@@ -130,37 +161,18 @@ class Solver():
             if neighbor in assignment:
                 x_index, y_index = self.crossword.overlaps[var, neighbor]
                 if word[x_index] != assignment[neighbor][y_index]:
-                    return False #checks to sif __name__ == '__main__':
-    fast_dict = FastDictionary()
-    
-    # Check usage
-    if len(sys.argv) not in [3, 4]:
-        sys.exit("Usage: python generate.py structure words [output]")
-
-    
-    # Parse command-line arguments
-    structure = sys.argv[1]
-    words = sys.argv[2]
-    output = sys.argv[3] if len(sys.argv) == 4 else None
-
-    # Generate crossword
-    crossword = Crossword(structure, words)
-    creator = CrosswordCreator(crossword)
-    assignment = creator.solve()
-
-    # Print result
-    if assignment is None:
-        print("No solution.")
-    else:
-        creator.print(assignment)
-        if output:
-            creator.save(assignment, output)ee if the char onhttps://drive.google.com/drive/folders/1PJJD6CHgCQTjNGvFiy72xHUt2Z_Epq77 the intersection r the same or not
-                
-
+                    return False 
         return True
     
     def backtrack(self, assignment):
-        '''main recursive search function'''
+        '''main recursive search function, tries to fit in words and corrects them by backtracking the solution if it gets stuck
+        
+        for exp: 
+        1. for slot 1 let's try 'CAT'
+        2 Run ac3 -> it says if 'CAT' used then Slot 2 is possible
+        3 Move to slot 2 -> 'Try' Cup
+        4. of slot 3 becomes impossible -> go back to slot2 abd try a different word than 'CUP'
+        '''
         #base case
         if self.assignment_complete(assignment):
             return assignment
@@ -187,11 +199,16 @@ class Solver():
                     
                 
                 #backtrack
-                del assignment[var]
-                self.domains = domain_record
+                del assignment[var] #erases that option that makes it stuck
+                self.domains = domain_record # backtracks
 
         return None
 
 
-
+''' BIGGER PICTURE
+ 1. __init__ gives everyone a list
+ 2. ac3 runs once to remove words that r immediately impossible based on grid shape
+ 3. backtrack  starts the trial and error phase
+ 4. ac3 and revise tells me the solver if the guess is going to ruin the puzzle later on
+ '''
 
